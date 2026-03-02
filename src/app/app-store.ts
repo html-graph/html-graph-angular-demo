@@ -32,6 +32,7 @@ export class AppStore {
           priority: 0,
           shape: {
             curvature: 250,
+            hasTargetArrow: true,
           },
         },
       })
