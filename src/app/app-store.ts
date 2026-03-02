@@ -5,7 +5,6 @@ import {
   Injectable,
   Injector,
   inputBinding,
-  signal,
 } from '@angular/core';
 import { Canvas, CanvasBuilder } from '@html-graph/html-graph';
 import { GraphNode } from './graph-node';
