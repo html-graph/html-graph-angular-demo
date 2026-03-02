@@ -31,14 +31,28 @@ export class AppStore {
         },
         edges: {
           priority: 0,
+          shape: {
+            curvature: 250,
+          },
         },
       })
-      .enableUserTransformableViewport()
+      .enableUserTransformableViewport({
+        transformPreprocessor: {
+          type: 'scale-limit',
+          minContentScale: 0.3,
+        },
+      })
       .enableBackground()
       .enableLayout({
         algorithm: {
           type: 'hierarchical',
-          layerWidth: 500,
+          layerWidth: 700,
+        },
+      })
+      .enableVirtualScroll({
+        nodeContainingRadius: {
+          horizontal: 250,
+          vertical: 5,
         },
       })
       .build();
