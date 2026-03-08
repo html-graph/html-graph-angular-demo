@@ -3,9 +3,9 @@
   {{ name }}
   @if (hasChildren) {
     @if (expanded$ | async) {
-      <button class="add-button" (click)="collapse()">-</button>
+      <button class="button" (click)="collapse()">-</button>
     } @else {
-      <button class="add-button" (click)="expand()">+</button>
+      <button class="button" (click)="expand()">+</button>
     }
   }
 </div>
