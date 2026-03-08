@@ -89,7 +89,7 @@ export class AppStore {
 
   expandNode(nodeId: Identifier): void {
     const childNodeIds = this.outgoingNodeIds.get(nodeId);
-    const focusNodes: Identifier[] = [nodeId];
+    const focusNodes: Identifier[] = [];
 
     if (childNodeIds !== undefined) {
       childNodeIds.forEach((childNodeId) => {
@@ -103,7 +103,9 @@ export class AppStore {
       });
     }
 
-    this.canvas.focus(focusNodes);
+    if (focusNodes.length > 0) {
+      this.canvas.focus(focusNodes);
+    }
 
     const expandedNodes = this.expandedNodesInternal$.getValue();
 
