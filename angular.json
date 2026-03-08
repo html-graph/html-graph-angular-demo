@@ -33,7 +33,6 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/html-graph-angular-demo/",
               "budgets": [
                 {
                   "type": "initial",
