@@ -8,7 +8,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { AppStore } from '../app-store';
+import { CanvasAdapter } from '../canvas-adapter';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
@@ -25,7 +25,7 @@ export class GraphNode implements AfterViewInit {
   @ViewChild('portOut', { static: true })
   portOut!: ElementRef;
 
-  private readonly store = inject(AppStore);
+  private readonly store = inject(CanvasAdapter);
 
   protected readonly nodeId$ = new BehaviorSubject<number | null>(null);
 

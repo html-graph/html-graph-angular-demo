@@ -14,7 +14,7 @@ import graphData from './graph.json';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
-export class AppStore {
+export class CanvasAdapter {
   private readonly outgoingNodeIds = new Map<Identifier, Set<Identifier>>();
 
   private canvas!: Canvas;

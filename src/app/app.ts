@@ -1,14 +1,14 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AppStore } from './app-store';
+import { CanvasAdapter } from './canvas-adapter';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.less',
-  providers: [AppStore],
+  providers: [CanvasAdapter],
 })
 export class App implements OnInit, OnDestroy {
-  private readonly store = inject(AppStore);
+  private readonly store = inject(CanvasAdapter);
 
   @ViewChild('canvas', { static: true })
   readonly canvas!: ElementRef;
