@@ -6,6 +6,7 @@ import {
   Injector,
   inputBinding,
   outputBinding,
+  ViewRef,
 } from '@angular/core';
 import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
 import { GraphNode } from './graph-node';
@@ -28,6 +29,8 @@ export class AppStore {
     this.expandedNodesInternal$.asObservable();
 
   private readonly minContentScale = 0.3;
+
+  private readonly viewRefs = new Map<Identifier, ViewRef>();
 
   init(element: HTMLElement): void {
     graphData.edges.forEach((edge) => {
@@ -142,7 +145,12 @@ export class AppStore {
     const newExpandedNodes = new Set(expandedNodes);
 
     nodesToRemove.forEach((removeNodeId) => {
+      const hostView = this.viewRefs.get(removeNodeId)!;
+      this.viewRefs.delete(removeNodeId);
+
       this.canvas.removeNode(removeNodeId);
+      hostView.destroy();
+
       newExpandedNodes.delete(removeNodeId);
     });
 
@@ -175,6 +183,7 @@ export class AppStore {
     });
 
     const { hostView, instance } = nodeComponent;
+    this.viewRefs.set(id, hostView);
 
     this.appRef.attachView(hostView);
 
