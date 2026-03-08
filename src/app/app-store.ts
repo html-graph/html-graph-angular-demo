@@ -26,6 +26,8 @@ export class AppStore {
   readonly expandedNodes$: Observable<ReadonlySet<Identifier>> =
     this.expandedNodesInternal$.asObservable();
 
+  private readonly minContentScale = 0.3;
+
   init(element: HTMLElement): void {
     graphData.edges.forEach((edge) => {
       const edges = this.outgoingNodeIds.get(edge.from);
@@ -49,11 +51,14 @@ export class AppStore {
             hasTargetArrow: true,
           },
         },
+        focus: {
+          minContentScale: this.minContentScale,
+        },
       })
       .enableUserTransformableViewport({
         transformPreprocessor: {
           type: 'scale-limit',
-          minContentScale: 0.3,
+          minContentScale: this.minContentScale,
         },
       })
       .enableBackground()
@@ -66,7 +71,7 @@ export class AppStore {
       .enableVirtualScroll({
         nodeContainingRadius: {
           horizontal: 250,
-          vertical: 5,
+          vertical: 25,
         },
       })
       .build();
@@ -83,6 +88,7 @@ export class AppStore {
 
   expandNode(nodeId: Identifier): void {
     const childNodeIds = this.outgoingNodeIds.get(nodeId);
+    const focusNodes: Identifier[] = [nodeId];
 
     if (childNodeIds !== undefined) {
       childNodeIds.forEach((childNodeId) => {
@@ -90,9 +96,13 @@ export class AppStore {
           this.addNode(childNodeId);
         }
 
+        focusNodes.push(childNodeId);
+
         this.canvas.addEdge({ from: `port-${nodeId}-out`, to: `port-${childNodeId}-in` });
       });
     }
+
+    this.canvas.focus(focusNodes);
 
     const expandedNodes = this.expandedNodesInternal$.getValue();
 
