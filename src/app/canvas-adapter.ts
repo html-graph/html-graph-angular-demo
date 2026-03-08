@@ -157,6 +157,8 @@ export class CanvasAdapter {
     newExpandedNodes.delete(nodeId);
 
     this.expandedNodesInternal$.next(newExpandedNodes);
+
+    this.canvas.focus([nodeId]);
   }
 
   hasChildren(nodeId: Identifier): boolean {
