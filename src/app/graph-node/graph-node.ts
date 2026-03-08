@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { AppStore } from '../app-store';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -40,8 +49,11 @@ export class GraphNode implements AfterViewInit {
   @Input({ required: true })
   name!: string;
 
+  @Output()
+  readonly initialized = new EventEmitter();
+
   ngAfterViewInit(): void {
-    this.store.renderNode(this.nodeId$.getValue()!);
+    this.initialized.emit();
   }
 
   protected expand(): void {

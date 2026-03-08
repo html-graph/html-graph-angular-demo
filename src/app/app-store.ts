@@ -5,6 +5,7 @@ import {
   Injectable,
   Injector,
   inputBinding,
+  outputBinding,
 } from '@angular/core';
 import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
 import { GraphNode } from './graph-node';
@@ -162,17 +163,25 @@ export class AppStore {
       environmentInjector: this.appRef.injector,
       hostElement: nodeElement,
       elementInjector: this.injector,
-      bindings: [inputBinding('id', () => id), inputBinding('name', () => `Node ${id}`)],
+      bindings: [
+        inputBinding('id', () => id),
+        inputBinding('name', () => `Node ${id}`),
+        outputBinding('initialized', () => {
+          this.canvas.updateNode(id);
+        }),
+      ],
     });
 
-    this.appRef.attachView(nodeComponent.hostView);
+    const { hostView, instance } = nodeComponent;
+
+    this.appRef.attachView(hostView);
 
     this.canvas.addNode({
       id,
       element: nodeElement,
       ports: [
-        { id: `port-${id}-in`, element: nodeComponent.instance.portIn.nativeElement },
-        { id: `port-${id}-out`, element: nodeComponent.instance.portOut.nativeElement },
+        { id: `port-${id}-in`, element: instance.portIn.nativeElement },
+        { id: `port-${id}-out`, element: instance.portOut.nativeElement },
       ],
     });
   }
