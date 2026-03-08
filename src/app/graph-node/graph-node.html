@@ -1,3 +1,12 @@
 <div #portIn></div>
-<div class="content">{{ name }} <button class="add-button" (click)="onClick()">+</button></div>
+<div class="content">
+  {{ name }}
+  @if (hasChildren) {
+    @if (expanded$ | async) {
+      <button class="add-button" (click)="collapse()">-</button>
+    } @else {
+      <button class="add-button" (click)="expand()">+</button>
+    }
+  }
+</div>
 <div #portOut></div>

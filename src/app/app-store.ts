@@ -6,12 +6,14 @@ import {
   Injector,
   inputBinding,
 } from '@angular/core';
-import { Canvas, CanvasBuilder } from '@html-graph/html-graph';
+import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
 import { GraphNode } from './graph-node';
+import graphData from './graph.json';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
 export class AppStore {
-  private element!: HTMLElement;
+  private readonly outgoingNodeIds = new Map<Identifier, Set<Identifier>>();
 
   private canvas!: Canvas;
 
@@ -19,11 +21,23 @@ export class AppStore {
 
   private readonly injector = inject(Injector);
 
-  private currentNodeId = 0;
+  private readonly expandedNodesInternal$ = new BehaviorSubject<Set<Identifier>>(new Set());
+
+  readonly expandedNodes$: Observable<ReadonlySet<Identifier>> =
+    this.expandedNodesInternal$.asObservable();
 
   init(element: HTMLElement): void {
-    this.element = element;
-    this.canvas = new CanvasBuilder(this.element)
+    graphData.edges.forEach((edge) => {
+      const edges = this.outgoingNodeIds.get(edge.from);
+
+      if (edges !== undefined) {
+        edges.add(edge.to);
+      } else {
+        this.outgoingNodeIds.set(edge.from, new Set([edge.to]));
+      }
+    });
+
+    this.canvas = new CanvasBuilder(element)
       .setDefaults({
         nodes: {
           priority: 1,
@@ -57,28 +71,82 @@ export class AppStore {
       })
       .build();
 
-    this.addNode(this.createNextId());
+    this.addNode(0);
+    this.expandNode(0);
 
     this.canvas.focus();
   }
 
-  addChildren(nodeId: number): void {
-    const size = Math.floor(Math.random() * 20);
+  renderNode(nodeId: Identifier): void {
+    this.canvas.updateNode(nodeId);
+  }
 
-    for (let i = 0; i < size; i++) {
-      const childNodeId = this.createNextId();
-      this.addNode(childNodeId);
-      this.canvas.addEdge({ from: `port-${nodeId}-out`, to: `port-${childNodeId}-in` });
+  expandNode(nodeId: Identifier): void {
+    const childNodeIds = this.outgoingNodeIds.get(nodeId);
+
+    if (childNodeIds !== undefined) {
+      childNodeIds.forEach((childNodeId) => {
+        if (!this.canvas.graph.hasNode(childNodeId)) {
+          this.addNode(childNodeId);
+        }
+
+        this.canvas.addEdge({ from: `port-${nodeId}-out`, to: `port-${childNodeId}-in` });
+      });
     }
 
-    console.log(nodeId);
+    const expandedNodes = this.expandedNodesInternal$.getValue();
+
+    const newExpandedNodes = new Set(expandedNodes);
+    newExpandedNodes.add(nodeId);
+
+    this.expandedNodesInternal$.next(newExpandedNodes);
+  }
+
+  collapseNode(nodeId: number): void {
+    const nodesToRemove = new Set<Identifier>();
+
+    const stack: Identifier[] = [nodeId];
+
+    while (stack.length > 0) {
+      const currentNodeId = stack.pop()!;
+
+      const childNodeIds = this.canvas.graph.getNodeOutgoingEdgeIds(currentNodeId).map((edgeId) => {
+        const edge = this.canvas.graph.getEdge(edgeId);
+        const port = this.canvas.graph.getPort(edge.to);
+
+        return port.nodeId;
+      });
+
+      childNodeIds.forEach((childId) => {
+        if (!nodesToRemove.has(childId)) {
+          stack.push(childId);
+          nodesToRemove.add(childId);
+        }
+      });
+    }
+
+    const expandedNodes = this.expandedNodesInternal$.getValue();
+    const newExpandedNodes = new Set(expandedNodes);
+
+    nodesToRemove.forEach((removeNodeId) => {
+      this.canvas.removeNode(removeNodeId);
+      newExpandedNodes.delete(removeNodeId);
+    });
+
+    newExpandedNodes.delete(nodeId);
+
+    this.expandedNodesInternal$.next(newExpandedNodes);
+  }
+
+  hasChildren(nodeId: Identifier): boolean {
+    return this.outgoingNodeIds.has(nodeId);
   }
 
   destroy(): void {
     this.canvas.destroy();
   }
 
-  private addNode(id: number): void {
+  private addNode(id: Identifier): void {
     const nodeElement = document.createElement('div');
     const nodeComponent = createComponent(GraphNode, {
       environmentInjector: this.appRef.injector,
@@ -97,9 +165,5 @@ export class AppStore {
         { id: `port-${id}-out`, element: nodeComponent.instance.portOut.nativeElement },
       ],
     });
-  }
-
-  private createNextId(): number {
-    return this.currentNodeId++;
   }
 }
