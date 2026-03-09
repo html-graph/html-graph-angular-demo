@@ -35,7 +35,7 @@ export class GraphNode implements AfterViewInit {
     this.store.expandedNodes$,
   ]).pipe(
     map(([nodeId, expandedNodes]) => {
-      return nodeId !== null && expandedNodes.has(nodeId);
+      return expandedNodes.has(nodeId!);
     }),
   );
 
