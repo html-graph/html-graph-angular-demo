@@ -8,16 +8,16 @@ import { CanvasAdapter } from './canvas-adapter';
   providers: [CanvasAdapter],
 })
 export class App implements OnInit, OnDestroy {
-  private readonly store = inject(CanvasAdapter);
+  private readonly adapter = inject(CanvasAdapter);
 
   @ViewChild('canvas', { static: true })
   readonly canvas!: ElementRef;
 
   ngOnInit(): void {
-    this.store.init(this.canvas.nativeElement);
+    this.adapter.init(this.canvas.nativeElement);
   }
 
   ngOnDestroy(): void {
-    this.store.destroy();
+    this.adapter.destroy();
   }
 }
