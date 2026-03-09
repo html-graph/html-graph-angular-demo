@@ -13,7 +13,7 @@
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
-    "@html-graph/html-graph": "^8.7.3",
+    "@html-graph/html-graph": "^8.7.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
