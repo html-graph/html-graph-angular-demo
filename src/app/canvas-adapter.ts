@@ -86,10 +86,6 @@ export class CanvasAdapter {
     this.canvas.focus();
   }
 
-  renderNode(nodeId: Identifier): void {
-    this.canvas.updateNode(nodeId);
-  }
-
   expandNode(nodeId: Identifier): void {
     const childNodeIds = this.outgoingNodeIds.get(nodeId);
     const focusNodes: Identifier[] = [];
