@@ -13,7 +13,6 @@ import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-graph-node',
   imports: [AsyncPipe],
   templateUrl: './graph-node.html',
   styleUrl: './graph-node.less',
