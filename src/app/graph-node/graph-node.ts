@@ -24,7 +24,7 @@ export class GraphNode implements AfterViewInit {
   @ViewChild('portOut', { static: true })
   portOut!: ElementRef;
 
-  private readonly store = inject(CanvasAdapter);
+  private readonly adapter = inject(CanvasAdapter);
 
   protected readonly nodeId$ = new BehaviorSubject<number | null>(null);
 
@@ -32,7 +32,7 @@ export class GraphNode implements AfterViewInit {
 
   protected readonly expanded$: Observable<boolean> = combineLatest([
     this.nodeId$,
-    this.store.expandedNodes$,
+    this.adapter.expandedNodes$,
   ]).pipe(
     map(([nodeId, expandedNodes]) => {
       return expandedNodes.has(nodeId!);
@@ -42,7 +42,7 @@ export class GraphNode implements AfterViewInit {
   @Input({ required: true })
   set id(value: number) {
     this.nodeId$.next(value);
-    this.hasChildren = this.store.hasChildren(value);
+    this.hasChildren = this.adapter.hasChildren(value);
   }
 
   @Input({ required: true })
@@ -58,12 +58,12 @@ export class GraphNode implements AfterViewInit {
   protected expand(): void {
     const nodeId = this.nodeId$.getValue()!;
 
-    this.store.expandNode(nodeId);
+    this.adapter.expandNode(nodeId);
   }
 
   protected collapse(): void {
     const nodeId = this.nodeId$.getValue()!;
 
-    this.store.collapseNode(nodeId);
+    this.adapter.collapseNode(nodeId);
   }
 }
