@@ -178,7 +178,7 @@ export class CanvasAdapter {
       bindings: [
         inputBinding('id', () => id),
         inputBinding('name', () => `Node ${id}`),
-        outputBinding('initialized', () => {
+        outputBinding('afterInitialized', () => {
           this.canvas.updateNode(id);
         }),
       ],

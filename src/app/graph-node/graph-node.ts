@@ -49,10 +49,10 @@ export class GraphNode implements AfterViewInit {
   name!: string;
 
   @Output()
-  readonly initialized = new EventEmitter();
+  readonly afterInitialized = new EventEmitter();
 
   ngAfterViewInit(): void {
-    this.initialized.emit();
+    this.afterInitialized.emit();
   }
 
   protected expand(): void {
