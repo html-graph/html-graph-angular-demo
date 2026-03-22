@@ -57,6 +57,7 @@ export class CanvasAdapter {
         },
         focus: {
           minContentScale: this.minContentScale,
+          animationDuration: 200,
         },
       })
       .enableUserTransformableViewport({
@@ -81,12 +82,11 @@ export class CanvasAdapter {
       .build();
 
     this.addNode(0);
-    this.expandNode(0);
-
-    this.canvas.focus();
+    this.expandNode(0, false);
+    this.canvas.focus({ animationDuration: 0 });
   }
 
-  expandNode(nodeId: Identifier): void {
+  expandNode(nodeId: Identifier, focus: boolean): void {
     const childNodeIds = this.outgoingNodeIds.get(nodeId);
     const focusNodes: Identifier[] = [];
 
@@ -102,7 +102,7 @@ export class CanvasAdapter {
       });
     }
 
-    if (focusNodes.length > 0) {
+    if (focus && focusNodes.length > 0) {
       this.canvas.focus(focusNodes);
     }
 

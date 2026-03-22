@@ -58,7 +58,7 @@ export class GraphNode implements AfterViewInit {
   protected expand(): void {
     const nodeId = this.nodeId$.getValue()!;
 
-    this.adapter.expandNode(nodeId);
+    this.adapter.expandNode(nodeId, true);
   }
 
   protected collapse(): void {
