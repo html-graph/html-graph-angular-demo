@@ -81,9 +81,25 @@ export class CanvasAdapter {
       })
       .build();
 
+    this.canvas.graph.onBeforeNodeRemoved.subscribe((nodeId) => {
+      const viewRef = this.viewRefs.get(nodeId)!;
+
+      viewRef.destroy();
+
+      this.viewRefs.delete(nodeId);
+    });
+
+    this.canvas.graph.onBeforeClear.subscribe(() => {
+      this.viewRefs.forEach((viewRef) => {
+        viewRef.destroy();
+      });
+
+      this.viewRefs.clear();
+    });
+
     this.addNode(0);
     this.expandNode(0, false);
-    this.canvas.focus({ animationDuration: 0 });
+    this.canvas.center({ x: 0, y: 0 });
   }
 
   expandNode(nodeId: Identifier, focus: boolean): void {
@@ -141,11 +157,7 @@ export class CanvasAdapter {
     const newExpandedNodes = new Set(expandedNodes);
 
     nodesToRemove.forEach((removeNodeId) => {
-      const hostView = this.viewRefs.get(removeNodeId)!;
-      this.viewRefs.delete(removeNodeId);
-
       this.canvas.removeNode(removeNodeId);
-      hostView.destroy();
 
       newExpandedNodes.delete(removeNodeId);
     });
