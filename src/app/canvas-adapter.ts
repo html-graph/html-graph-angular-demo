@@ -90,16 +90,16 @@ export class CanvasAdapter {
     });
 
     this.canvas.graph.onBeforeClear.subscribe(() => {
-      this.viewRefs.forEach((viewRef) => {
-        viewRef.destroy();
-      });
-
-      this.viewRefs.clear();
+      this.reset();
     });
 
+    this.canvas.onBeforeDestroy.subscribe(() => {
+      this.reset();
+    });
+
+    this.canvas.center({ x: 0, y: 0 });
     this.addNode(0);
     this.expandNode(0, false);
-    this.canvas.center({ x: 0, y: 0 });
   }
 
   expandNode(nodeId: Identifier, focus: boolean): void {
@@ -205,5 +205,13 @@ export class CanvasAdapter {
         { id: `port-${id}-out`, element: instance.portOut.nativeElement },
       ],
     });
+  }
+
+  private reset(): void {
+    this.viewRefs.forEach((viewRef) => {
+      viewRef.destroy();
+    });
+
+    this.viewRefs.clear();
   }
 }
