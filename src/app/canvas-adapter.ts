@@ -16,7 +16,9 @@ import graphData from './graph.json';
 @Injectable()
 export class CanvasAdapter {
   private readonly appRef = inject(ApplicationRef);
+
   private readonly injector = inject(Injector);
+
   private canvas!: Canvas;
 
   /** Stores Angular component views to properly clean them up when nodes are removed */
@@ -190,6 +192,7 @@ export class CanvasAdapter {
     const expandedNodes = this.expandedNodes();
     const newExpandedNodes = new Set(expandedNodes);
     newExpandedNodes.add(nodeId);
+
     this.expandedNodes.set(newExpandedNodes);
 
     return childNodeIds;
