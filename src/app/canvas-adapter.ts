@@ -9,7 +9,7 @@ import {
   ViewRef,
 } from '@angular/core';
 import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
-import { GraphNode } from './graph-node';
+import { GraphNodeShape } from './graph-node-shape';
 import graphData from './graph.json';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -114,7 +114,7 @@ export class CanvasAdapter {
   private addNode(nodeId: Identifier): void {
     const nodeElement = document.createElement('div');
 
-    const nodeComponent = createComponent(GraphNode, {
+    const nodeComponent = createComponent(GraphNodeShape, {
       environmentInjector: this.appRef.injector,
       hostElement: nodeElement,
       elementInjector: this.injector,

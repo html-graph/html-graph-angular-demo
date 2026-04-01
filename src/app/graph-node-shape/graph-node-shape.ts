@@ -11,10 +11,10 @@ import {
 import { Identifier } from '@html-graph/html-graph';
 
 @Component({
-  templateUrl: './graph-node.html',
-  styleUrl: './graph-node.less',
+  templateUrl: './graph-node-shape.html',
+  styleUrl: './graph-node-shape.less',
 })
-export class GraphNode implements AfterViewInit {
+export class GraphNodeShape implements AfterViewInit {
   @ViewChild('portIn', { static: true })
   portIn!: ElementRef;
 
