@@ -3,12 +3,14 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostBinding,
   input,
   Input,
   Output,
   ViewChild,
 } from '@angular/core';
 import { Identifier } from '@html-graph/html-graph';
+import { nodeDimensions } from '../node-dimensions';
 
 @Component({
   templateUrl: './graph-node-shape.html',
@@ -20,6 +22,12 @@ export class GraphNodeShape implements AfterViewInit {
 
   @ViewChild('portOut', { static: true })
   portOut!: ElementRef;
+
+  @HostBinding('style.minWidth.px')
+  readonly minWidth = nodeDimensions.width;
+
+  @HostBinding('style.minHeight.px')
+  readonly minHeigh = nodeDimensions.height;
 
   readonly expanded = input.required<boolean>();
 

@@ -12,6 +12,7 @@ import {
 import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
 import { GraphNodeShape } from './graph-node-shape';
 import graphData from './graph.json';
+import { nodeDimensions } from './node-dimensions';
 
 @Injectable()
 export class CanvasAdapter {
@@ -80,8 +81,8 @@ export class CanvasAdapter {
       })
       .enableVirtualScroll({
         nodeContainingRadius: {
-          horizontal: 250,
-          vertical: 25,
+          horizontal: nodeDimensions.width / 2,
+          vertical: nodeDimensions.height / 2,
         },
       })
       .build();
