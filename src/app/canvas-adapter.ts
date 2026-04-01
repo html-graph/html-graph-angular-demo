@@ -6,13 +6,12 @@ import {
   Injector,
   inputBinding,
   outputBinding,
+  signal,
   ViewRef,
 } from '@angular/core';
 import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
 import { GraphNodeShape } from './graph-node-shape';
 import graphData from './graph.json';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable()
 export class CanvasAdapter {
@@ -24,14 +23,7 @@ export class CanvasAdapter {
 
   private readonly injector = inject(Injector);
 
-  private readonly expandedNodesInternal$ = new BehaviorSubject<Set<Identifier>>(new Set());
-
-  readonly expandedNodes$: Observable<ReadonlySet<Identifier>> =
-    this.expandedNodesInternal$.asObservable();
-
-  private readonly expandedNodes = toSignal(this.expandedNodesInternal$, {
-    initialValue: new Set<Identifier>(),
-  });
+  private readonly expandedNodes = signal<ReadonlySet<Identifier>>(new Set<Identifier>());
 
   private readonly minContentScale = 0.3;
 
@@ -176,12 +168,12 @@ export class CanvasAdapter {
       });
     }
 
-    const expandedNodes = this.expandedNodesInternal$.getValue();
+    const expandedNodes = this.expandedNodes();
 
     const newExpandedNodes = new Set(expandedNodes);
     newExpandedNodes.add(nodeId);
 
-    this.expandedNodesInternal$.next(newExpandedNodes);
+    this.expandedNodes.set(newExpandedNodes);
 
     return childNodeIds!;
   }
@@ -209,7 +201,7 @@ export class CanvasAdapter {
       });
     }
 
-    const expandedNodes = this.expandedNodesInternal$.getValue();
+    const expandedNodes = this.expandedNodes();
     const newExpandedNodes = new Set(expandedNodes);
 
     nodesToRemove.forEach((removeNodeId) => {
@@ -220,7 +212,7 @@ export class CanvasAdapter {
 
     newExpandedNodes.delete(nodeId);
 
-    this.expandedNodesInternal$.next(newExpandedNodes);
+    this.expandedNodes.set(newExpandedNodes);
 
     this.canvas.focus([nodeId]);
   }
