@@ -12,6 +12,7 @@ import { Canvas, CanvasBuilder, Identifier } from '@html-graph/html-graph';
 import { GraphNode } from './graph-node';
 import graphData from './graph.json';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable()
 export class CanvasAdapter {
@@ -27,6 +28,10 @@ export class CanvasAdapter {
 
   readonly expandedNodes$: Observable<ReadonlySet<Identifier>> =
     this.expandedNodesInternal$.asObservable();
+
+  private readonly expandedNodes = toSignal(this.expandedNodesInternal$, {
+    initialValue: new Set<Identifier>(),
+  });
 
   private readonly minContentScale = 0.3;
 
@@ -99,10 +104,63 @@ export class CanvasAdapter {
 
     this.canvas.center({ x: 0, y: 0 });
     this.addNode(0);
-    this.expandNode(0, false);
+    this.expandRootNode(0);
   }
 
-  expandNode(nodeId: Identifier, focus: boolean): void {
+  destroy(): void {
+    this.canvas.destroy();
+  }
+
+  private addNode(nodeId: Identifier): void {
+    const nodeElement = document.createElement('div');
+
+    const nodeComponent = createComponent(GraphNode, {
+      environmentInjector: this.appRef.injector,
+      hostElement: nodeElement,
+      elementInjector: this.injector,
+      bindings: [
+        inputBinding('nodeId', () => nodeId),
+        inputBinding('name', () => `Node ${nodeId}`),
+        inputBinding('expanded', () => this.expandedNodes().has(nodeId)),
+        inputBinding('hasChildren', () => this.outgoingNodeIds.get(nodeId) !== undefined),
+        outputBinding('afterInitialized', () => {
+          this.canvas.updateNode(nodeId);
+        }),
+        outputBinding('expandTriggered', () => {
+          this.expandChildNode(nodeId);
+        }),
+        outputBinding('collapseTriggered', () => {
+          this.collapseChildrenRecursive(nodeId);
+        }),
+      ],
+    });
+
+    const { hostView, instance } = nodeComponent;
+    this.viewRefs.set(nodeId, hostView);
+
+    this.appRef.attachView(hostView);
+
+    this.canvas.addNode({
+      id: nodeId,
+      element: nodeElement,
+      ports: [
+        { id: `port-${nodeId}-in`, element: instance.portIn.nativeElement },
+        { id: `port-${nodeId}-out`, element: instance.portOut.nativeElement },
+      ],
+    });
+  }
+
+  private expandRootNode(nodeId: Identifier): void {
+    this.expandNode(nodeId);
+  }
+
+  private expandChildNode(nodeId: Identifier): void {
+    const childNodeIds = this.expandNode(nodeId);
+
+    this.canvas.focus(childNodeIds);
+  }
+
+  private expandNode(nodeId: Identifier): Iterable<Identifier> {
     const childNodeIds = this.outgoingNodeIds.get(nodeId);
     const focusNodes: Identifier[] = [];
 
@@ -118,19 +176,17 @@ export class CanvasAdapter {
       });
     }
 
-    if (focus && focusNodes.length > 0) {
-      this.canvas.focus(focusNodes);
-    }
-
     const expandedNodes = this.expandedNodesInternal$.getValue();
 
     const newExpandedNodes = new Set(expandedNodes);
     newExpandedNodes.add(nodeId);
 
     this.expandedNodesInternal$.next(newExpandedNodes);
+
+    return childNodeIds!;
   }
 
-  collapseNode(nodeId: number): void {
+  private collapseChildrenRecursive(nodeId: Identifier): void {
     const nodesToRemove = new Set<Identifier>();
 
     const stack: Identifier[] = [nodeId];
@@ -167,44 +223,6 @@ export class CanvasAdapter {
     this.expandedNodesInternal$.next(newExpandedNodes);
 
     this.canvas.focus([nodeId]);
-  }
-
-  hasChildren(nodeId: Identifier): boolean {
-    return this.outgoingNodeIds.has(nodeId);
-  }
-
-  destroy(): void {
-    this.canvas.destroy();
-  }
-
-  private addNode(id: Identifier): void {
-    const nodeElement = document.createElement('div');
-    const nodeComponent = createComponent(GraphNode, {
-      environmentInjector: this.appRef.injector,
-      hostElement: nodeElement,
-      elementInjector: this.injector,
-      bindings: [
-        inputBinding('id', () => id),
-        inputBinding('name', () => `Node ${id}`),
-        outputBinding('afterInitialized', () => {
-          this.canvas.updateNode(id);
-        }),
-      ],
-    });
-
-    const { hostView, instance } = nodeComponent;
-    this.viewRefs.set(id, hostView);
-
-    this.appRef.attachView(hostView);
-
-    this.canvas.addNode({
-      id,
-      element: nodeElement,
-      ports: [
-        { id: `port-${id}-in`, element: instance.portIn.nativeElement },
-        { id: `port-${id}-out`, element: instance.portOut.nativeElement },
-      ],
-    });
   }
 
   private reset(): void {

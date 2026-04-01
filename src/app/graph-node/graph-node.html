@@ -2,7 +2,7 @@
 <div class="content">
   {{ name }}
   @if (hasChildren) {
-    @if (expanded$ | async) {
+    @if (expanded()) {
       <button class="button" (click)="collapse()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
           <path

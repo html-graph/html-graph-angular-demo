@@ -3,17 +3,14 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  inject,
+  input,
   Input,
   Output,
   ViewChild,
 } from '@angular/core';
-import { CanvasAdapter } from '../canvas-adapter';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { Identifier } from '@html-graph/html-graph';
 
 @Component({
-  imports: [AsyncPipe],
   templateUrl: './graph-node.html',
   styleUrl: './graph-node.less',
 })
@@ -24,46 +21,35 @@ export class GraphNode implements AfterViewInit {
   @ViewChild('portOut', { static: true })
   portOut!: ElementRef;
 
-  private readonly adapter = inject(CanvasAdapter);
-
-  protected readonly nodeId$ = new BehaviorSubject<number | null>(null);
-
-  protected hasChildren = false;
-
-  protected readonly expanded$: Observable<boolean> = combineLatest([
-    this.nodeId$,
-    this.adapter.expandedNodes$,
-  ]).pipe(
-    map(([nodeId, expandedNodes]) => {
-      return expandedNodes.has(nodeId!);
-    }),
-  );
+  readonly expanded = input.required<boolean>();
 
   @Input({ required: true })
-  set id(value: number) {
-    this.nodeId$.next(value);
-    this.hasChildren = this.adapter.hasChildren(value);
-  }
+  nodeId!: Identifier;
 
   @Input({ required: true })
   name!: string;
 
+  @Input({ required: true })
+  hasChildren!: string;
+
   @Output()
   readonly afterInitialized = new EventEmitter();
+
+  @Output()
+  readonly expandTriggered = new EventEmitter();
+
+  @Output()
+  readonly collapseTriggered = new EventEmitter();
 
   ngAfterViewInit(): void {
     this.afterInitialized.emit();
   }
 
   protected expand(): void {
-    const nodeId = this.nodeId$.getValue()!;
-
-    this.adapter.expandNode(nodeId, true);
+    this.expandTriggered.emit();
   }
 
   protected collapse(): void {
-    const nodeId = this.nodeId$.getValue()!;
-
-    this.adapter.collapseNode(nodeId);
+    this.collapseTriggered.emit();
   }
 }
