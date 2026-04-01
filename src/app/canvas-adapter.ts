@@ -136,8 +136,8 @@ export class CanvasAdapter {
       id: nodeId,
       element: nodeElement,
       ports: [
-        { id: `port-${nodeId}-in`, element: instance.portIn.nativeElement },
-        { id: `port-${nodeId}-out`, element: instance.portOut.nativeElement },
+        { id: `${nodeId}-in`, element: instance.portIn.nativeElement },
+        { id: `${nodeId}-out`, element: instance.portOut.nativeElement },
       ],
     });
   }
@@ -159,7 +159,7 @@ export class CanvasAdapter {
 
       focusNodes.push(childNodeId);
 
-      this.canvas.addEdge({ from: `port-${nodeId}-out`, to: `port-${childNodeId}-in` });
+      this.canvas.addEdge({ from: `${nodeId}-out`, to: `${childNodeId}-in` });
     });
 
     const expandedNodes = this.expandedNodes();
