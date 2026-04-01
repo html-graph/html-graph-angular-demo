@@ -24,10 +24,10 @@ export class GraphNodeShape implements AfterViewInit {
   portOut!: ElementRef;
 
   @HostBinding('style.minWidth.px')
-  readonly minWidth = nodeDimensions.width;
+  protected readonly minWidth = nodeDimensions.width;
 
   @HostBinding('style.minHeight.px')
-  readonly minHeigh = nodeDimensions.height;
+  protected readonly minHeigh = nodeDimensions.height;
 
   readonly expanded = input.required<boolean>();
 
