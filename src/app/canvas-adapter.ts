@@ -197,13 +197,12 @@ export class CanvasAdapter {
 
   /**
    * Collapses a node and recursively removes all its descendants from the graph
-   * Uses depth-first traversal to collect and remove all nested child nodes
    */
   private collapseChildrenRecursive(nodeId: Identifier): void {
     const nodesToRemove = new Set<Identifier>();
     const stack: Identifier[] = [nodeId];
 
-    // DFS traversal to collect all descendant nodes
+    // Depth-first traversal to collect all descendant nodes
     while (stack.length > 0) {
       const currentNodeId = stack.pop()!;
 
