@@ -149,20 +149,18 @@ export class CanvasAdapter {
   }
 
   private expandNode(nodeId: Identifier): Iterable<Identifier> {
-    const childNodeIds = this.outgoingNodeIds.get(nodeId);
+    const childNodeIds = this.outgoingNodeIds.get(nodeId)!;
     const focusNodes: Identifier[] = [];
 
-    if (childNodeIds !== undefined) {
-      childNodeIds.forEach((childNodeId) => {
-        if (!this.canvas.graph.hasNode(childNodeId)) {
-          this.addNode(childNodeId);
-        }
+    childNodeIds.forEach((childNodeId) => {
+      if (!this.canvas.graph.hasNode(childNodeId)) {
+        this.addNode(childNodeId);
+      }
 
-        focusNodes.push(childNodeId);
+      focusNodes.push(childNodeId);
 
-        this.canvas.addEdge({ from: `port-${nodeId}-out`, to: `port-${childNodeId}-in` });
-      });
-    }
+      this.canvas.addEdge({ from: `port-${nodeId}-out`, to: `port-${childNodeId}-in` });
+    });
 
     const expandedNodes = this.expandedNodes();
 
@@ -171,7 +169,7 @@ export class CanvasAdapter {
 
     this.expandedNodes.set(newExpandedNodes);
 
-    return childNodeIds!;
+    return childNodeIds;
   }
 
   private collapseChildrenRecursive(nodeId: Identifier): void {
