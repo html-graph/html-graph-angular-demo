@@ -88,6 +88,7 @@ export class CanvasAdapter {
 
     this.canvas.graph.onBeforeClear.subscribe(() => {
       this.reset();
+      this.expandedNodes.set(new Set());
     });
 
     this.canvas.onBeforeDestroy.subscribe(() => {
