@@ -96,7 +96,7 @@ export class CanvasAdapter {
 
     this.canvas.center({ x: 0, y: 0 });
     this.addNode(0);
-    this.expandRootNode(0);
+    this.expandNode(0);
   }
 
   destroy(): void {
@@ -140,10 +140,6 @@ export class CanvasAdapter {
         { id: `port-${nodeId}-out`, element: instance.portOut.nativeElement },
       ],
     });
-  }
-
-  private expandRootNode(nodeId: Identifier): void {
-    this.expandNode(nodeId);
   }
 
   private expandChildNode(nodeId: Identifier): void {
