@@ -232,6 +232,7 @@ export class CanvasAdapter {
 
     // Remove expansion state of the parent node itself
     newExpandedNodes.delete(nodeId);
+
     this.expandedNodes.set(newExpandedNodes);
 
     // Focus back on the collapsed node
