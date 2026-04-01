@@ -15,19 +15,19 @@ import graphData from './graph.json';
 
 @Injectable()
 export class CanvasAdapter {
-  private readonly outgoingNodeIds = new Map<Identifier, Set<Identifier>>();
-
-  private canvas!: Canvas;
-
   private readonly appRef = inject(ApplicationRef);
 
   private readonly injector = inject(Injector);
 
-  private readonly expandedNodes = signal<ReadonlySet<Identifier>>(new Set<Identifier>());
+  private canvas!: Canvas;
+
+  private readonly viewRefs = new Map<Identifier, ViewRef>();
+
+  private readonly outgoingNodeIds = new Map<Identifier, Set<Identifier>>();
 
   private readonly minContentScale = 0.3;
 
-  private readonly viewRefs = new Map<Identifier, ViewRef>();
+  private readonly expandedNodes = signal<ReadonlySet<Identifier>>(new Set<Identifier>());
 
   init(element: HTMLElement): void {
     graphData.edges.forEach((edge) => {
