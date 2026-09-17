@@ -85,6 +85,10 @@ export class CanvasAdapter {
           vertical: nodeDimensions.height / 2,
         },
       })
+      // This feature must be enabled, because angular does not initialize
+      // styles right after component is created.
+      // Alternatively you can call canvas.updateNode(...) right after ngAfterViewInit
+      .enableNodeResizeReactiveEdges()
       .build();
 
     // Clean up Angular component when a node is removed
@@ -134,10 +138,6 @@ export class CanvasAdapter {
         // Reactive binding using signal - component updates when expansion state changes
         inputBinding('expanded', () => this.expandedNodes().has(nodeId)),
         inputBinding('hasChildren', () => this.outgoingNodeIds.get(nodeId) !== undefined),
-        // Notify canvas that node is ready after Angular lifecycle completes
-        outputBinding('afterInitialized', () => {
-          this.canvas.updateNode(nodeId);
-        }),
         // Handle user click on expand/collapse button
         outputBinding('expandTriggered', () => {
           this.expandChildNode(nodeId);
