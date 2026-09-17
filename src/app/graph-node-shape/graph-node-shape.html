@@ -1,7 +1,7 @@
 <div #portIn></div>
 <div class="content">
-  {{ name }}
-  @if (hasChildren) {
+  {{ name() }}
+  @if (hasChildren()) {
     @if (expanded()) {
       <button class="button" (click)="collapse()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">

@@ -4,7 +4,6 @@ import {
   EventEmitter,
   HostBinding,
   input,
-  Input,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -30,14 +29,11 @@ export class GraphNodeShape {
 
   readonly expanded = input.required<boolean>();
 
-  @Input({ required: true })
-  nodeId!: Identifier;
+  nodeId = input.required<Identifier>();
 
-  @Input({ required: true })
-  name!: string;
+  name = input.required<string>();
 
-  @Input({ required: true })
-  hasChildren!: string;
+  hasChildren = input.required<boolean>();
 
   @Output()
   readonly expandTriggered = new EventEmitter();
