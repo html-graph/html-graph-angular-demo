@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -16,7 +15,7 @@ import { nodeDimensions } from '../node-dimensions';
   templateUrl: './graph-node-shape.html',
   styleUrl: './graph-node-shape.less',
 })
-export class GraphNodeShape implements AfterViewInit {
+export class GraphNodeShape {
   @ViewChild('portIn', { static: true })
   portIn!: ElementRef;
 
@@ -41,17 +40,10 @@ export class GraphNodeShape implements AfterViewInit {
   hasChildren!: string;
 
   @Output()
-  readonly afterInitialized = new EventEmitter();
-
-  @Output()
   readonly expandTriggered = new EventEmitter();
 
   @Output()
   readonly collapseTriggered = new EventEmitter();
-
-  ngAfterViewInit(): void {
-    this.afterInitialized.emit();
-  }
 
   protected expand(): void {
     this.expandTriggered.emit();
