@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostBinding,
-  input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, HostBinding, input, output, ViewChild } from '@angular/core';
 import { Identifier } from '@html-graph/html-graph';
 import { nodeDimensions } from '../node-dimensions';
 
@@ -35,11 +27,9 @@ export class GraphNodeShape {
 
   hasChildren = input.required<boolean>();
 
-  @Output()
-  readonly expandTriggered = new EventEmitter();
+  readonly expandTriggered = output();
 
-  @Output()
-  readonly collapseTriggered = new EventEmitter();
+  readonly collapseTriggered = output();
 
   protected expand(): void {
     this.expandTriggered.emit();
